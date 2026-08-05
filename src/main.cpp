@@ -13,6 +13,7 @@ const double yAxisOffset = 0;
 const double hipLength = 12.3;
 const double kneeLength = 12;
 const int reachLimit = hipLength + kneeLength;
+double planarLength;
 double totalLength;
 
 double baseAngle;
@@ -37,9 +38,10 @@ int findAngle(double OppositeSide, double otherSideA, double otherSideB){
 void calculateIK(double x, double y, double z){
     x += xAxisOffset;
     y += yAxisOffset;
-    z += zAxisOffset;
+    z -= zAxisOffset;
 
-    totalLength = sqrt(x*x + y*y);
+    planarLength = sqrt(x*x + y*y);
+    totalLength = sqrt(planarLength + z);
     
     if (totalLength <= reachLimit){
 
@@ -66,7 +68,7 @@ void calculateIK(double x, double y, double z){
 }
 
 void loop() {
-  calculateIK(10,5,0);
+  calculateIK(0,10,0);
 }
 
 
