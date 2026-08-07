@@ -29,8 +29,6 @@ void setup() {
   hip.attach(22);
   knee.attach(21);
 
-  
-  
 }
 
 double findAngle(double OppositeSide, double otherSideA, double otherSideB){
@@ -38,47 +36,42 @@ double findAngle(double OppositeSide, double otherSideA, double otherSideB){
 }
 
 void calculateIK(double x, double y, double z){
-    x += xAxisOffset;
-    y += yAxisOffset;
-    z += zAxisOffset;
+  x += xAxisOffset;
+  y += yAxisOffset;
+  z += zAxisOffset;
 
-    planarLength = sqrt(x*x + y*y);
-    totalLength = sqrt(planarLength*planarLength + z*z);
-    
-    if (totalLength <= reachLimit && planarLength >= minLength){
+  planarLength = sqrt(x*x + y*y);
+  totalLength = sqrt(planarLength*planarLength + z*z);
+  
+  if (totalLength <= reachLimit && planarLength >= minLength){
+  elevationAngle = degrees(atan2(z , planarLength));
+  baseAngle = constrain(degrees(atan2(y,x)) + baseServoOffset, 0, 180);
+  hipAngle = constrain(findAngle(kneeLength, hipLength, totalLength) + elevationAngle, 0, 180);
+  kneeAngle = constrain((180 - findAngle(totalLength, kneeLength, hipLength)), 0, 180);
+  /* explain Knee Angle:
+    180 - findAngle gets you the external angle of the joint (how much servo must rotate)
+    that has to be added from the straight line of the arm, so from 90 deg which is the angle when the arm is straight
+  */
 
-    elevationAngle = degrees(atan2(z , planarLength));
-    baseAngle = constrain(degrees(atan2(y,x)) + baseServoOffset, 0, 180);
-    hipAngle = constrain(findAngle(kneeLength, hipLength, totalLength) + elevationAngle, 0, 180);
-    kneeAngle = constrain((180 - findAngle(totalLength, kneeLength, hipLength)), 0, 180);
-    /* explain Knee Angle:
-      180 - findAngle gets you the external angle of the joint (how much servo must rotate)
-      that has to be added from the straight line of the arm, so from 90 deg which is the angle when the arm is straight
-    */
+  base.write(baseAngle);
+  hip.write(hipAngle);
+  knee.write(kneeAngle);
 
+  Serial.println(elevationAngle);
+  Serial.println(baseAngle);
+  Serial.println(hipAngle);
+  Serial.println(kneeAngle);
+  delay(1000);
 
-
-
-    base.write(baseAngle);
-    hip.write(hipAngle);
-    knee.write(kneeAngle);
-
-      Serial.println(elevationAngle);
-      Serial.println(baseAngle);
-      Serial.println(hipAngle);
-      Serial.println(kneeAngle);
-      delay(1000);
-
-    }
-    else{
-      Serial.println("Target too far or close.");
-      delay(1000);
-    }
-
+}
+else{
+    Serial.println("Target too far or close.");
+    delay(1000);
+  }
 }
 
 void loop() {
-  calculateIK(0, 5, 5);
+  calculateIK(10, 0, 5);
 }
 
 
