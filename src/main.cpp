@@ -71,7 +71,7 @@ else{
 }
 
 void loop() {
-  calculateIK(10, 0, 5);
+  calculateIK(10, 5, 0);
 }
 
 
