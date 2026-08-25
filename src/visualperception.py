@@ -24,13 +24,14 @@ while True:
     cv2.circle(frame, tuple(tr), 5, (0, 0, 255), -1)
     cv2.circle(frame, tuple(br), 5, (0, 0, 255), -1)
 
-    ptLocations = [tl, bl, tr, br]
-    transformedPoints = [[0,0], [0,480], [640, 0], [640, 480]]
+    ptLocations = np.array([tl, tr, br, bl], dtype=np.float32)
+    transformedPoints = np.array([[0, 0], [640, 0], [640, 480], [0, 480]], dtype=np.float32)
 
     imgMatrix = cv2.getPerspectiveTransform(ptLocations, transformedPoints)
-
+    transformedImg = cv2.warpPerspective(frame, imgMatrix, (640, 480))
     #simple perspective transform wip.
     cv2.imshow("webcam", frame)
+    cv2.imshow("bird's eye", transformedImg)
 
     if not ret:
         print("Failed to grab frame")
