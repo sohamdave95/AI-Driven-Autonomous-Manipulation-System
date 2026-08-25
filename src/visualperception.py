@@ -24,11 +24,12 @@ while True:
     cv2.circle(frame, tuple(tr), 5, (0, 0, 255), -1)
     cv2.circle(frame, tuple(br), 5, (0, 0, 255), -1)
 
-    #ptLocations = [tl, bl, tr, br]
+    ptLocations = [tl, bl, tr, br]
+    transformedPoints = [[0,0], [0,480], [640, 0], [640, 480]]
 
-   
+    imgMatrix = cv2.getPerspectiveTransform(ptLocations, transformedPoints)
 
-
+    #simple perspective transform wip.
     cv2.imshow("webcam", frame)
 
     if not ret:
