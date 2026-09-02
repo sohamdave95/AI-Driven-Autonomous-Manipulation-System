@@ -24,12 +24,12 @@ while True:
     xCenter = width // 2
     yCenter = height // 2
     
-    tl = [111, 200]  # Left side
-    bl = [60, 444]   # Left side
-    tr = [555, 200]  # Right side
-    br = [615, 444]  # Right side
+    tl = [111, 200]  
+    bl = [60, 444]   
+    tr = [555, 200]  
+    br = [615, 444]  
 
-    # 2. Draw AFTER the flip
+    # 4 points
     cv2.circle(frame, tuple(tl), 5, (0, 0, 255), -1)
     cv2.circle(frame, tuple(bl), 5, (0, 0, 255), -1)
     cv2.circle(frame, tuple(tr), 5, (0, 0, 255), -1)
@@ -41,14 +41,14 @@ while True:
     imgMatrix = cv2.getPerspectiveTransform(ptLocations, transformedPoints)
     transformedImg = cv2.warpPerspective(frame, imgMatrix, (640, 480))
 
-    texts = [["toy car", "Hot Wheels car"]]
+    texts = ["toy car", "Hot Wheels car"]
 
     
-    image_rgb = cv2.cvtColor(transformedImg, cv2.COLOR_BGR2RGB)
+    image_rgb = cv2.cvtColor(transformedImg, cv2.COLOR_BGR2RGB) #learned this the hard way, converts color channels from bgr as in cv2 to rgb for the huggingface model.
     pil_image = Image.fromarray(image_rgb)
 
     
-    inputs = processor(text=texts, images=pil_image, return_tensors="pt")
+    inputs = processor(text=texts, images=pil_image, return_tensors="pt") #feed images into model as a tensor
     with torch.no_grad():
         outputs = model(**inputs)
 
@@ -79,5 +79,8 @@ while True:
     
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+
+
+    
 camera.release()
 cv2.destroyAllWindows()
