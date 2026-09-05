@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-import torch
 from ultralytics import YOLO
 
 
@@ -8,6 +7,13 @@ model = YOLO("yolov8s-world.pt")
 model.set_classes(["toy car", "pen", "earbuds", "hand", "rocket nosecone"])
 
 camera = cv2.VideoCapture(0)
+workspaceWidth = 38.0 #in cm
+workspaceHeight = 22.0 #in cm
+scaledY = 38.0/640
+scaledX = 22.0/480
+xOffset = 0
+yOffset = 34.0
+
 
 while True:
     ret, frame = camera.read()
@@ -39,15 +45,23 @@ while True:
     imgMatrix = cv2.getPerspectiveTransform(ptLocations, transformedPoints)
     transformedImg = cv2.warpPerspective(frame, imgMatrix, (640, 480))
 
-    #simple perspective transform wip.
-    #cv2.imshow("webcam", frame)
+
     
 
-    results = model(transformedImg, conf=0.25)
+    results = model(transformedImg, conf=0.15)
     annotated_frame = results[0].plot()
 
+    for box in results[0].boxes:
+        xmin, ymin, xmax, ymax = box.xyxy[0].tolist()
+        center_u = (xmin + xmax) / 2
+        center_v = (ymin + ymax) / 2
+        real_y = 34.0 - center_u * scaledY 
+        real_x = center_v * scaledX
+        text = f"X: {real_x:.1f} Y: {real_y:.1f}"
+        cv2.putText(annotated_frame, text, (int(xmin), max(int(ymin) - 10, 20)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
     cv2.imshow("bird's eye", transformedImg)
-    cv2.imshow("objectdetection", annotated_frame)
+    cv2.imshow("object detection", annotated_frame)
     
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
