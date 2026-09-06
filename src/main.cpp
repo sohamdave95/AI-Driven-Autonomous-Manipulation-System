@@ -6,9 +6,9 @@ Servo base;
 Servo hip;
 Servo knee; 
 
-const double xAxisOffset = 10.3; // 10.3
+const double xAxisOffset = 0; // 10.3
 const double zAxisOffset = -7.2;
-const double yAxisOffset = 0; // 0
+const double yAxisOffset = 8.0; // 0
 const int baseServoOffset = 90;
 const double hipLength = 12.3;
 const double kneeLength = 12;
@@ -72,7 +72,7 @@ else{
 }
 
 void loop() {
-  calculateIK(0, 0, 0);
+  calculateIK(6.8, 3.6, 0);
 }
 
 
