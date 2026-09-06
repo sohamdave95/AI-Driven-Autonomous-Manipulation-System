@@ -14,6 +14,7 @@ const double hipLength = 12.3;
 const double kneeLength = 12;
 const int reachLimit = hipLength + kneeLength;
 const int minLength = 8;
+const double minReach = 3.0; 
 double planarLength;
 double totalLength;
 
@@ -43,7 +44,7 @@ void calculateIK(double x, double y, double z){
   planarLength = sqrt(x*x + y*y);
   totalLength = sqrt(planarLength*planarLength + z*z);
   
-  if (totalLength <= reachLimit && planarLength >= minLength){
+  if (totalLength <= reachLimit && totalLength >= minReach && planarLength >= minLength){
   elevationAngle = degrees(atan2(z , planarLength));
   baseAngle = constrain(degrees(atan2(y,x)) + baseServoOffset, 0, 180);
   hipAngle = constrain(findAngle(kneeLength, hipLength, totalLength) + elevationAngle, 0, 180);
@@ -57,9 +58,9 @@ void calculateIK(double x, double y, double z){
   hip.write(hipAngle);
   knee.write(kneeAngle);
 
-  Serial.println(elevationAngle);
-  Serial.println(baseAngle);
-  Serial.println(hipAngle);
+  //Serial.println(elevationAngle);
+  //Serial.println(baseAngle);
+  //Serial.println(hipAngle);
   Serial.println(kneeAngle);
   delay(1000);
 
@@ -71,7 +72,7 @@ else{
 }
 
 void loop() {
-  calculateIK(10, 5, 0);
+  calculateIK(0, 0, 0);
 }
 
 
