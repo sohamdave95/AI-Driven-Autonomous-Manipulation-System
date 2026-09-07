@@ -4,7 +4,8 @@
 
 Servo base;
 Servo hip;
-Servo knee; 
+Servo knee;
+Servo gripper; 
 
 const double xAxisOffset = -3.5; // 10.3
 const double zAxisOffset = -6.2; // -7.2, or -5.2
@@ -17,11 +18,16 @@ const int minLength = 4;
 const double minReach = 4.0; 
 double planarLength;
 double totalLength;
+const double grabHeightOffset = 3;
 
 double baseAngle;
 double hipAngle;
 double kneeAngle;
 double elevationAngle;
+
+double x;
+double y;
+double z;
 
 void setup() {
   Serial.begin(115200);
@@ -29,6 +35,7 @@ void setup() {
   base.attach(23);
   hip.attach(22);
   knee.attach(21);
+  gripper.attach(19);
 
 }
 
@@ -50,20 +57,10 @@ void calculateIK(double x, double y, double z){
   baseAngle = constrain(degrees(atan2(y,x)) + baseServoOffset, 0, 180);
   hipAngle = constrain(findAngle(kneeLength, hipLength, totalLength) + elevationAngle, 0, 180);
   kneeAngle = constrain((180 - findAngle(totalLength, kneeLength, hipLength)), 0, 180);
-  /* explain Knee Angle:
-    180 - findAngle gets you the external angle of the joint (how much servo must rotate)
-    that has to be added from the straight line of the arm, so from 90 deg which is the angle when the arm is straight
-  */
 
-  base.write(baseAngle); // baseAngle
-  hip.write(hipAngle); // hipAngle
+  base.write(baseAngle); 
+  hip.write(hipAngle); 
   knee.write(kneeAngle);
-
-  //Serial.println(elevationAngle);
-  //Serial.println(baseAngle);
-  Serial.println(hipAngle);
-  Serial.println(kneeAngle);
-  delay(1000);
 
 }
 else{
@@ -72,9 +69,34 @@ else{
   }
 }
 
-void loop() {
-  calculateIK(13, 3, 3);
+void closeGripper(){
+  gripper.write(180);
+}
+
+void openGripper(){
+  gripper.write(0);
+}
+
+void pickUp(double x, double y, double z){
+  calculateIK(x, y, z + grabHeightOffset);
+  delay(1000);
+  openGripper();
+  delay(1000);
+  calculateIK(x, y, z);
+  delay(1000);
+  closeGripper();
+  delay(1000);
+
+
 }
 
 
+void loop() {
+  
+  pickUp(12.2, -2.2, 0);
+  calculateIK(4, 7, 3);
+  delay(5000);
+  openGripper();
+  
+}
 

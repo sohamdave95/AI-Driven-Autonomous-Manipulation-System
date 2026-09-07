@@ -4,15 +4,16 @@ from ultralytics import YOLO
 
 
 model = YOLO("yolov8s-world.pt")
-model.set_classes(["toy car", "pen", "earbuds", "hand", "rocket nosecone"])
+model.set_classes(["toy car", "pen"])
 
 camera = cv2.VideoCapture(0)
 workspaceWidth = 38.0 #in cm
 workspaceHeight = 22.0 #in cm
 scaledY = 38.0/640
 scaledX = 22.0/480
-xOffset = 1
+xOffset = 1.0
 yOffset = 34.0
+referenceFrameOffset = 17.0
 
 
 
@@ -50,7 +51,7 @@ while True:
 
     
 
-    results = model(transformedImg, conf=0.15)
+    results = model(transformedImg, conf=0.1)
     annotated_frame = results[0].plot()
 
     for box in results[0].boxes:
@@ -58,7 +59,7 @@ while True:
         center_u = (xmin + xmax) / 2
         center_v = (ymin + ymax) / 2
         real_y = (yOffset - center_u * scaledY)
-        real_y = real_y - 17
+        real_y = real_y - referenceFrameOffset
         real_x = center_v * scaledX - xOffset
         text = f"X: {real_x:.1f} Y: {real_y:.1f}"
         cv2.putText(annotated_frame, text, (int(xmin), max(int(ymin) - 10, 20)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
