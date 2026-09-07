@@ -15,6 +15,7 @@ xOffset = 1
 yOffset = 34.0
 
 
+
 while True:
     ret, frame = camera.read()
 
@@ -27,6 +28,7 @@ while True:
     height, width, _ = frame.shape
     xCenter = width // 2
     yCenter = height // 2
+    
     
     tl = [111, 200]  
     bl = [60, 444]   
@@ -55,7 +57,8 @@ while True:
         xmin, ymin, xmax, ymax = box.xyxy[0].tolist()
         center_u = (xmin + xmax) / 2
         center_v = (ymin + ymax) / 2
-        real_y = yOffset - center_u * scaledY 
+        real_y = (yOffset - center_u * scaledY)
+        real_y = real_y - 17
         real_x = center_v * scaledX - xOffset
         text = f"X: {real_x:.1f} Y: {real_y:.1f}"
         cv2.putText(annotated_frame, text, (int(xmin), max(int(ymin) - 10, 20)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
