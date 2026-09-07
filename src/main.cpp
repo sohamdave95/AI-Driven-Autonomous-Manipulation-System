@@ -6,15 +6,15 @@ Servo base;
 Servo hip;
 Servo knee; 
 
-const double xAxisOffset = 0; // 10.3
-const double zAxisOffset = -7.2;
-const double yAxisOffset = 8.0; // 0
+const double xAxisOffset = -3.5; // 10.3
+const double zAxisOffset = -6.2; // -7.2, or -5.2
+const double yAxisOffset = 0; // 0
 const int baseServoOffset = 90;
 const double hipLength = 12.3;
 const double kneeLength = 12;
 const int reachLimit = hipLength + kneeLength;
-const int minLength = 8;
-const double minReach = 3.0; 
+const int minLength = 4;
+const double minReach = 4.0; 
 double planarLength;
 double totalLength;
 
@@ -33,7 +33,8 @@ void setup() {
 }
 
 double findAngle(double OppositeSide, double otherSideA, double otherSideB){
-  return constrain(degrees(acos(((OppositeSide*OppositeSide) - (otherSideA*otherSideA) - (otherSideB*otherSideB))/(-2*otherSideA*otherSideB))), 0, 180);
+  return degrees(acos(((OppositeSide*OppositeSide) - (otherSideA*otherSideA) - (otherSideB*otherSideB))/(-2*otherSideA*otherSideB)));
+  //return constrain(degrees(acos(((OppositeSide*OppositeSide) - (otherSideA*otherSideA) - (otherSideB*otherSideB))/(-2*otherSideA*otherSideB))), 0, 180);
 }
 
 void calculateIK(double x, double y, double z){
@@ -54,13 +55,13 @@ void calculateIK(double x, double y, double z){
     that has to be added from the straight line of the arm, so from 90 deg which is the angle when the arm is straight
   */
 
-  base.write(baseAngle);
-  hip.write(hipAngle);
+  base.write(baseAngle); // baseAngle
+  hip.write(hipAngle); // hipAngle
   knee.write(kneeAngle);
 
   //Serial.println(elevationAngle);
   //Serial.println(baseAngle);
-  //Serial.println(hipAngle);
+  Serial.println(hipAngle);
   Serial.println(kneeAngle);
   delay(1000);
 
@@ -72,7 +73,7 @@ else{
 }
 
 void loop() {
-  calculateIK(6.8, 3.6, 0);
+  calculateIK(13, 3, 3);
 }
 
 

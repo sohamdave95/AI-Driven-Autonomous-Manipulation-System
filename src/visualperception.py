@@ -11,7 +11,7 @@ workspaceWidth = 38.0 #in cm
 workspaceHeight = 22.0 #in cm
 scaledY = 38.0/640
 scaledX = 22.0/480
-xOffset = 0
+xOffset = 1
 yOffset = 34.0
 
 
@@ -55,12 +55,12 @@ while True:
         xmin, ymin, xmax, ymax = box.xyxy[0].tolist()
         center_u = (xmin + xmax) / 2
         center_v = (ymin + ymax) / 2
-        real_y = 34.0 - center_u * scaledY 
-        real_x = center_v * scaledX
+        real_y = yOffset - center_u * scaledY 
+        real_x = center_v * scaledX - xOffset
         text = f"X: {real_x:.1f} Y: {real_y:.1f}"
         cv2.putText(annotated_frame, text, (int(xmin), max(int(ymin) - 10, 20)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-    cv2.imshow("bird's eye", transformedImg)
+    #cv2.imshow("bird's eye", transformedImg)
     cv2.imshow("object detection", annotated_frame)
     
     if cv2.waitKey(1) & 0xFF == ord('q'):
