@@ -41,7 +41,7 @@ void setup() {
 
 double findAngle(double OppositeSide, double otherSideA, double otherSideB){
   return degrees(acos(((OppositeSide*OppositeSide) - (otherSideA*otherSideA) - (otherSideB*otherSideB))/(-2*otherSideA*otherSideB)));
-  //return constrain(degrees(acos(((OppositeSide*OppositeSide) - (otherSideA*otherSideA) - (otherSideB*otherSideB))/(-2*otherSideA*otherSideB))), 0, 180);
+  
 }
 
 void calculateIK(double x, double y, double z){
@@ -64,7 +64,7 @@ void calculateIK(double x, double y, double z){
 
 }
 else{
-    Serial.println("Target too far or close.");
+    //Serial.println("Target too far or close.");
     delay(1000);
   }
 }
@@ -92,12 +92,20 @@ void pickUp(double x, double y, double z){
 
 
 void loop() {
+  if (Serial.available() > 0){
+
+    String msg = Serial.readStringUntil('\n');
+
+    int firstComma = msg.indexOf(',');
+    
+
+    if (firstComma > 0) {
+      double targetX = msg.substring(0, firstComma).toDouble();
+      double targetY = msg.substring(firstComma + 1).toDouble();
+      pickUp(targetX, targetY, 0);
+    }
   
-  pickUp(12.2, -2.2, 0);
-  calculateIK(4, 7, 3);
-  delay(5000);
-  openGripper();
-  delay(5000);
+  }
   
 }
 
