@@ -97,6 +97,7 @@ void loop() {
   calculateIK(4, 7, 3);
   delay(5000);
   openGripper();
+  delay(5000);
   
 }
 
