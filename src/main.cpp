@@ -9,7 +9,7 @@ Servo gripper;
 
 const double xAxisOffset = -3.5; // 10.3
 const double zAxisOffset = -6.2; // -7.2, or -5.2
-const double yAxisOffset = 0; // 0
+const double yAxisOffset = -2.5; // 0
 const int baseServoOffset = 90;
 const double hipLength = 12.3;
 const double kneeLength = 12;
@@ -64,7 +64,7 @@ void calculateIK(double x, double y, double z){
 
 }
 else{
-    //Serial.println("Target too far or close.");
+    Serial.println("Target too far or close.");
     delay(1000);
   }
 }
@@ -78,27 +78,26 @@ void openGripper(){
 }
 
 void pickUp(double x, double y, double z){
-  calculateIK(x, y, z + grabHeightOffset);
-  delay(1000);
-  openGripper();
-  delay(1000);
+  //calculateIK(x, y, z + grabHeightOffset);
+  //delay(1000);
+  //openGripper();
+ // delay(1000);
   calculateIK(x, y, z);
-  delay(1000);
-  closeGripper();
-  delay(1000);
+  //delay(1000);
+  //closeGripper();
+  //delay(1000);
 
 
 }
 
 
 void loop() {
+  
   if (Serial.available() > 0){
 
     String msg = Serial.readStringUntil('\n');
 
     int firstComma = msg.indexOf(',');
-    
-
     if (firstComma > 0) {
       double targetX = msg.substring(0, firstComma).toDouble();
       double targetY = msg.substring(firstComma + 1).toDouble();
@@ -106,6 +105,10 @@ void loop() {
     }
   
   }
+
+  
+
+  
   
 }
 
