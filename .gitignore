@@ -1,3 +1,18 @@
-﻿.pio
+# Python / Junk
+__pycache__/
+*.py[cod]
+.venv/
+env/
+venv/
+
+# AI Model Weights
+*.pt
+*.onnx
+
+# Environment Keys
+.env
+
+# IDE / OS
 .vscode/
-weights/clip/ViT-B-32.pt
+.idea/
+.DS_Store
