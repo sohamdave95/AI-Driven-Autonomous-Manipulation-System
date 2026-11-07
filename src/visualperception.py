@@ -7,7 +7,7 @@ import threading
 
 
 model = YOLO("yolov8s-world.pt")
-model.set_classes(["toy car", "pen"])\
+model.set_classes(["toy car", "pen"])
 
 
 camera = cv2.VideoCapture(0)
