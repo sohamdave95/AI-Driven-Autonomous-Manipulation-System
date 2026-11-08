@@ -10,11 +10,18 @@ load_dotenv()
 client = genai.Client(api_key=os.getenv("apiKey"))
 
 def generateInstructions(user_prompt: str) -> dict:
-    with visualperception.dataLock:
-        obj_name = visualperception.current_detected_object
-        obj_x = visualperception.latest_real_x
-        obj_y = visualperception.latest_real_y
-        obj_z = visualperception.latest_real_z
+    print("DEBUG: Entering generateInstructions...")
+    
+    try:
+        with visualperception.dataLock:
+            obj_name = visualperception.current_detected_object
+            obj_x = visualperception.latest_real_x
+            obj_y = visualperception.latest_real_y
+            obj_z = visualperception.latest_real_z
+        print(f"DEBUG: Vision data retrieved -> Object: {obj_name}, X:{obj_x}, Y:{obj_y}")
+    except Exception as e:
+        print(f"DEBUG ERROR acquiring lock/vision data: {e}")
+        obj_name, obj_x, obj_y, obj_z = "unknown", 0.0, 0.0, 0.0
 
     system_instruction = """
     You are the cognitive task planner for a 4DOF robotic arm. 
@@ -32,14 +39,17 @@ def generateInstructions(user_prompt: str) -> dict:
 
     user_payload = f"User Request: '{user_prompt}'\nLive Camera Feed Data: {json.dumps(vision_context)}"
 
+    print("DEBUG: Sending request to Gemini 3.8 Flash...")
     response = client.models.generate_content(
-        model='gemini-2.5-flash',
+        model='gemini-3.8-flash',
         contents=f"{system_instruction}\n\n{user_payload}",
         config=types.GenerateContentConfig(
             response_mime_type="application/json",
-            temperature=0.1,  # low temp for more realisitic answers
+            temperature=0.1,
         ),
     )
+    print("DEBUG: Received response from Gemini!")
 
     plan_data = json.loads(response.text)
     return plan_data
+

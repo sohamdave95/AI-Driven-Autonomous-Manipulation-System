@@ -119,8 +119,6 @@ void loop() {
       home();
       }
     }
-  }else{
-    home();
   }
 }
 
