@@ -20,7 +20,6 @@ yOffset = 34.0
 referenceFrameOffset = 17.0
 grabHeightOffset = 3
 
-
 latest_real_x = 0.0
 latest_real_y = 0.0
 latest_real_z = 0.0
@@ -28,8 +27,6 @@ current_detected_object = ""
 
 latestTransformedImg = None
 annotatedFrame = None
-lastSendTime = 0
-sendDelay = 8
 dataLock = threading.Lock()
 
 def set_yolo_classes(class_list):

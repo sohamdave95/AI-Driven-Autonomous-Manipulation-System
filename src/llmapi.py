@@ -9,8 +9,7 @@ load_dotenv()
 
 client = genai.Client(api_key=os.getenv("apiKey"))
 
-
-def generateInstructions(user_prompt: str) -> dict: #our input is string and output a hash dict.
+def generateInstructions(user_prompt: str) -> dict:
     with visualperception.dataLock:
         obj_name = visualperception.current_detected_object
         obj_x = visualperception.latest_real_x
@@ -20,7 +19,10 @@ def generateInstructions(user_prompt: str) -> dict: #our input is string and out
     system_instruction = """
     You are the cognitive task planner for a 4DOF robotic arm. 
     Available hardware commands: 'move' (requires x,y,z coordinates in cm), 'open', 'close', 'home'.
-    You must output a valid JSON object containing a 'plan' list of command steps.
+    
+    You must output a valid JSON object containing:
+    1. "target_object": A string naming the specific object the user wants to find or interact with (used to update the YOLO-World vision model).
+    2. "plan": A list of command steps to execute.
     """
 
     vision_context = {
@@ -30,7 +32,6 @@ def generateInstructions(user_prompt: str) -> dict: #our input is string and out
 
     user_payload = f"User Request: '{user_prompt}'\nLive Camera Feed Data: {json.dumps(vision_context)}"
 
-    
     response = client.models.generate_content(
         model='gemini-2.5-flash',
         contents=f"{system_instruction}\n\n{user_payload}",
@@ -40,6 +41,5 @@ def generateInstructions(user_prompt: str) -> dict: #our input is string and out
         ),
     )
 
-    
     plan_data = json.loads(response.text)
     return plan_data
