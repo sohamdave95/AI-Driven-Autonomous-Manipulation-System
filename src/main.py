@@ -12,27 +12,16 @@ while True:
     if userInput.lower() == 'q':
         break
 
-    # Extract basic object keyword immediately so YOLO locks on first
-    if "scissors" in userInput.lower():
-        visualperception.set_yolo_classes(["scissors"])
-        time.sleep(0.5)
-    elif "pen" in userInput.lower():
-        visualperception.set_yolo_classes(["pen"])
-        time.sleep(0.5)
-
-    print("Generating AI instructions from Gemini...")
+   
     try:
         results = llmapi.generateInstructions(userInput)
     except Exception as e:
         print(f"Error communicating with Gemini API: {e}")
         continue
 
-    print("Received Plan from LLM:", results)
-
-    # Dynamic fallback update from Gemini JSON
+    
     target_obj = results.get("target_object")
     if target_obj:
-        print(f"-> Dynamically updating YOLO vision model to track: '{target_obj}'")
         visualperception.set_yolo_classes([target_obj])
         time.sleep(1.0) 
     

@@ -33,6 +33,45 @@ def set_yolo_classes(class_list):
     model.set_classes(class_list)
 
 
+
+def start_camera_display():
+    global latestTransformedImg, annotatedFrame
+    while True:
+        ret, frame = camera.read()
+        if not ret:
+            print("Failed to grab frame")
+            break
+        
+        frame = cv2.flip(frame, 1)
+        
+        tl = [111, 200]  
+        bl = [60, 444]   
+        tr = [555, 200]  
+        br = [615, 444]  
+
+        ptLocations = np.array([tl, tr, br, bl], dtype=np.float32)
+        transformedPoints = np.array([[0, 0], [640, 0], [640, 480], [0, 480]], dtype=np.float32)
+
+        imgMatrix = cv2.getPerspectiveTransform(ptLocations, transformedPoints)
+        transformedImg = cv2.warpPerspective(frame, imgMatrix, (640, 480))
+
+        with dataLock:
+            latestTransformedImg = transformedImg
+
+        with dataLock:
+            if annotatedFrame is not None:
+                cv2.imshow("object detection", annotatedFrame)
+            else:
+                cv2.imshow("object detection", transformedImg)
+                
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    camera.release()
+    cv2.destroyAllWindows()
+
+threading.Thread(target=start_camera_display, daemon=True).start()
+
 def yolo_worker_thread():
     global latestTransformedImg, annotatedFrame, latest_real_x, latest_real_y, latest_real_z, current_detected_object
     
@@ -76,42 +115,3 @@ def yolo_worker_thread():
 
 
 threading.Thread(target=yolo_worker_thread, daemon=True).start()
-
-
-def start_camera_display():
-    global latestTransformedImg, annotatedFrame
-    while True:
-        ret, frame = camera.read()
-        if not ret:
-            print("Failed to grab frame")
-            break
-        
-        frame = cv2.flip(frame, 1)
-        
-        tl = [111, 200]  
-        bl = [60, 444]   
-        tr = [555, 200]  
-        br = [615, 444]  
-
-        ptLocations = np.array([tl, tr, br, bl], dtype=np.float32)
-        transformedPoints = np.array([[0, 0], [640, 0], [640, 480], [0, 480]], dtype=np.float32)
-
-        imgMatrix = cv2.getPerspectiveTransform(ptLocations, transformedPoints)
-        transformedImg = cv2.warpPerspective(frame, imgMatrix, (640, 480))
-
-        with dataLock:
-            latestTransformedImg = transformedImg
-
-        with dataLock:
-            if annotatedFrame is not None:
-                cv2.imshow("object detection", annotatedFrame)
-            else:
-                cv2.imshow("object detection", transformedImg)
-                
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-
-    camera.release()
-    cv2.destroyAllWindows()
-
-threading.Thread(target=start_camera_display, daemon=True).start()

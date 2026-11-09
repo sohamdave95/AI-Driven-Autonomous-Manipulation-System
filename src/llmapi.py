@@ -10,7 +10,6 @@ load_dotenv()
 client = genai.Client(api_key=os.getenv("apiKey"))
 
 def generateInstructions(user_prompt: str) -> dict:
-    print("DEBUG: Entering generateInstructions...")
     
     try:
         with visualperception.dataLock:
@@ -18,9 +17,9 @@ def generateInstructions(user_prompt: str) -> dict:
             obj_x = visualperception.latest_real_x
             obj_y = visualperception.latest_real_y
             obj_z = visualperception.latest_real_z
-        print(f"DEBUG: Vision data retrieved -> Object: {obj_name}, X:{obj_x}, Y:{obj_y}")
+        
     except Exception as e:
-        print(f"DEBUG ERROR acquiring lock/vision data: {e}")
+        print(e)
         obj_name, obj_x, obj_y, obj_z = "unknown", 0.0, 0.0, 0.0
 
     system_instruction = """
@@ -39,17 +38,15 @@ def generateInstructions(user_prompt: str) -> dict:
 
     user_payload = f"User Request: '{user_prompt}'\nLive Camera Feed Data: {json.dumps(vision_context)}"
 
-    print("DEBUG: Sending request to Gemini 3.8 Flash...")
+    print("Sending request to llm")
     response = client.models.generate_content(
         model='gemini-3.8-flash',
         contents=f"{system_instruction}\n\n{user_payload}",
         config=types.GenerateContentConfig(
             response_mime_type="application/json",
             temperature=0.1,
-        ),
+        )
     )
-    print("DEBUG: Received response from Gemini!")
-
     plan_data = json.loads(response.text)
     return plan_data
 
